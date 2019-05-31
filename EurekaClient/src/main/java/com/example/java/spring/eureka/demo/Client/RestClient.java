@@ -15,35 +15,45 @@ import java.util.Map;
 @RestController
 public interface RestClient {
 
-    @GetMapping(value = "/doctor/")
+    @GetMapping(value = "/doctor/", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Headers("Content-Type: application/json")
     List<Doctor> getAllDoctors();
 
-    @PostMapping(value = "/doctor/")
+    @PostMapping(value = "/doctor/", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Headers("Content-Type: application/json")
     ResponseEntity<Object> createDoctor(@RequestBody Doctor doctor);
 
-    @GetMapping(value = "/doctor/{id}")
+    @GetMapping(value = "/doctor/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Headers("Content-Type: application/json")
     Doctor getOneDoctor(@PathVariable Integer id);
 
-    @PostMapping(value = "/doctor/{id}")
+    @PostMapping(value = "/doctor/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Headers("Content-Type: application/json")
     ResponseEntity<Object> updateDoctor(@PathVariable Integer id, @RequestBody Doctor newDoctor);
 
-    @GetMapping(value = "/doctor/delete/{id}")
+    @GetMapping(value = "/doctor/delete/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Headers("Content-Type: application/json")
     Map<String, Boolean> deleteDoctor(@PathVariable Integer id);
 
 
 
-    @GetMapping(value = "/department/")
+    @GetMapping(value = "/department/", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Headers("Content-Type: application/json")
     List<Department> getAllDepartments();
 
-    @PostMapping(value = "/department/")
+    @PostMapping(value = "/department/", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Headers("Content-Type: application/json")
     ResponseEntity<Object> createDepartment(@RequestBody Department department);
 
-    @GetMapping(value = "/department/{id}")
+    @GetMapping(value = "/department/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Headers("Content-Type: application/json")
     Department getOneDepartment(@PathVariable Integer id);
 
-    @PostMapping(value = "/department/{id}")
+    @PostMapping(value = "/department/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Headers("Content-Type: application/json")
     ResponseEntity<Object> updateDepartment(@PathVariable Integer id, @RequestBody Department newDepartment);
 
-    @GetMapping(value = "/department/delete/{id}")
+    @GetMapping(value = "/department/delete/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Headers("Content-Type: application/json")
     Map<String, Boolean> deleteDepartment(@PathVariable Integer id);
 }
