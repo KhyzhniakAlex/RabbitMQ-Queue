@@ -3,6 +3,7 @@ package com.java.spring.rabbit.queueconsumer.DAL.Model;
 import javax.persistence.*;
 
 @Entity
+@Table(name="logging")
 public class LoggingTable {
 
     @Id

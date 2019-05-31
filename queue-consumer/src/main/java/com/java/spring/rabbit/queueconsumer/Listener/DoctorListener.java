@@ -21,7 +21,7 @@ public class DoctorListener {
         System.out.println(record);
 
         if (record == null) return;
-        record.setMessageType("RECORD UPDATED");
+        record.setMessageType("RECORD GOTTEN");
         saveEntity(record);
     }
 

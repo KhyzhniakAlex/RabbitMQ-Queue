@@ -3,20 +3,21 @@ package com.labs.maven.springBoot.SpringBootMSC.Model;
 import javax.persistence.*;
 
 @Entity
+@Table(name="logging")
 public class LoggingTable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Column(name = "MessageType")
-    private String MessageType;
+    @Column(name = "messageType")
+    private String messageType;
 
-    @Column(name = "MessageText")
-    private String MessageText;
+    @Column(name = "messageText")
+    private String messageText;
 
-    @Column(name = "EntityName")
-    private String EntityName;
+    @Column(name = "entityName")
+    private String entityName;
 
     public int getId() {
         return id;
@@ -25,21 +26,21 @@ public class LoggingTable {
         this.id = id;
     }
     public String getMessageType() {
-        return MessageType;
+        return messageType;
     }
     public void setMessageType(String messageType) {
-        MessageType = messageType;
+        this.messageType = messageType;
     }
     public String getMessageText() {
-        return MessageText;
+        return messageText;
     }
     public void setMessageText(String messageText) {
-        MessageText = messageText;
+        this.messageText = messageText;
     }
     public String getEntityName() {
-        return EntityName;
+        return entityName;
     }
     public void setEntityName(String entityName) {
-        EntityName = entityName;
+        this.entityName = entityName;
     }
 }

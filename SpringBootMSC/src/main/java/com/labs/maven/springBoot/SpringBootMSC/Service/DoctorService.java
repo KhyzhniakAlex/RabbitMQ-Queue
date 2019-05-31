@@ -1,15 +1,20 @@
 package com.labs.maven.springBoot.SpringBootMSC.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.labs.maven.springBoot.SpringBootMSC.Messaging.Producer;
 import com.labs.maven.springBoot.SpringBootMSC.Model.Department;
 import com.labs.maven.springBoot.SpringBootMSC.Model.Doctor;
 import com.labs.maven.springBoot.SpringBootMSC.Model.ExceptionMessage;
+import com.labs.maven.springBoot.SpringBootMSC.Model.LoggingTable;
 import com.labs.maven.springBoot.SpringBootMSC.Repositories.DoctorRepository;
 import com.labs.maven.springBoot.SpringBootMSC.ServerExceptions.InvalidInfoException;
 import com.labs.maven.springBoot.SpringBootMSC.ServerExceptions.ThereIsNoSuchItemException;
 import com.labs.maven.springBoot.SpringBootMSC.ServiceInterfaces.ServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +28,20 @@ public class DoctorService implements ServiceInterface<Doctor> {
     public void setDoctorRepository(DoctorRepository repository) {
         this.repository = repository;
     }
+
+    @Autowired
+    Producer publisher;
+
+    @Value("${jsa.rabbitmq.queue.createdtype}")
+    String queueCreatedName;
+
+    @Value("${jsa.rabbitmq.queue.gettype}")
+    String queueGetName;
+
+    @Value("${jsa.rabbitmq.queue.deletedtype}")
+    String queueDeletedName;
+
+
 
     @Override
     public Optional<Doctor> getById(Integer id) {
@@ -41,6 +60,7 @@ public class DoctorService implements ServiceInterface<Doctor> {
                 return doctor;
             });
         }
+        sendLog(doc.get(), queueGetName);
         return doc;
     }
 
@@ -79,6 +99,7 @@ public class DoctorService implements ServiceInterface<Doctor> {
             em.setGap("Incorrect SALARY");
             throw new InvalidInfoException();
         } else{
+            sendLog(doc, queueCreatedName);
             return repository.save(doc);
         }
     }
@@ -138,18 +159,37 @@ public class DoctorService implements ServiceInterface<Doctor> {
                     throw new ThereIsNoSuchItemException();
                 } else {
                     doc.setPresenceFlag(false);
-                    /*Department dep = doc.getDepartment();
-                    if (dep != null) {
-                        for (Doctor doctor : dep.getDoctors()) {
-                            repository.findById(doctor.getId()).map(doct -> {
-                                if (doct == doc) dep.getDoctors().remove(doct);
-                                return doct;
-                            });
-                        }
-                    }*/
+                    sendLog(doc, queueDeletedName);
                     return repository.save(doc);
                 }
             });
         }
+    }
+
+
+
+
+    private void sendLog(Doctor doctor, String queueName) {
+        System.out.println("*******************");
+        System.out.println("Sending message");
+        LoggingTable logRecord = new LoggingTable();
+        ObjectMapper mapper = new ObjectMapper();
+
+
+        try {
+            logRecord.setMessageText(mapper.writeValueAsString(doctor));
+            logRecord.setEntityName(Doctor.class.getName());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String loggerRecordString = null;
+        try {
+            loggerRecordString = mapper.writeValueAsString(logRecord);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(loggerRecordString);
+        publisher.produceMsg(loggerRecordString, queueName);
     }
 }
