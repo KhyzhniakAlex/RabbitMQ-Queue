@@ -23,14 +23,14 @@ public class DepartmentController {
 
     private static final Logger LOG = LoggerFactory.getLogger(Application.class);
 
-    @Value("${message_department:Department}")
+    /*@Value("${message_department:Department}")
     private String message;
 
     @RequestMapping("department/message")
     public String getDepartmentMessage() {
         LOG.info("This is an info message(messageDepartment)");
         return message;
-    }
+    }*/
 
 
 

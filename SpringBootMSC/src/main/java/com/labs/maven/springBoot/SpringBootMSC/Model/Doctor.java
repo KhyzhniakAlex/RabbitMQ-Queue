@@ -3,6 +3,7 @@ package com.labs.maven.springBoot.SpringBootMSC.Model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name="doctors")
@@ -12,10 +13,10 @@ public class Doctor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "fname", nullable = false)
-    private String fname;
-    @Column(name = "surname", nullable = false)
-    private String surname;
+    @Column(name = "firstName", nullable = false)
+    private String firstName;
+    @Column(name = "lastName", nullable = false)
+    private String lastName;
     @Column(name = "age", nullable = false)
     private Integer age;
     @Column(name = "salary", nullable = false)
@@ -25,10 +26,10 @@ public class Doctor {
     @Column(name="presenceFlag", nullable = false)
     private boolean presenceFlag = true;
 
-    public Doctor(String fname, String surname, Integer age, Integer salary)
+    public Doctor(String firstName, String lastName, Integer age, Integer salary)
     {
-        this.fname = fname;
-        this.surname = surname;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.age = age;
         this.salary = salary;
     }
@@ -42,32 +43,39 @@ public class Doctor {
     @JoinColumn(name = "departmentID")
     @JsonIgnore
     private Department department;
-
     public Department getDepartment() {
         return department;
     }
-
     public void setDepartment(Department department) {
         this.department = department;
     }
 
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Patient> patients;
+    public Set<Patient> getPatients() {
+        return patients;
+    }
+    public void setPatients(Set<Patient> patients) {
+        this.patients = patients;
+    }
 
 
     public int getId() { return id; }
     public void setId(int id) {
         this.id = id;
     }
-    public String getFname() {
-        return fname;
+    public String getFirstName() {
+        return firstName;
     }
-    public void setFname(String fname) {
-        this.fname = fname;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
-    public String getSurname() {
-        return surname;
+    public String getLastName() {
+        return lastName;
     }
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
     public Integer getAge() {
         return age;
@@ -95,7 +103,7 @@ public class Doctor {
         if (obj == null || this.getClass() != obj.getClass())
             return false;
         Doctor doc = (Doctor)obj;
-        if (this.getSurname().equals(doc.getSurname()) && this.getFname().equals(doc.getFname()))
+        if (this.getLastName().equals(doc.getLastName()) && this.getFirstName().equals(doc.getFirstName()))
             return false;
         return (this.getSalary().equals(doc.getSalary()));
     }

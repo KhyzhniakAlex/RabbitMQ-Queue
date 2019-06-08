@@ -1,7 +1,7 @@
 package com.labs.maven.springBoot.SpringBootMSC.Controller;
 
-import com.labs.maven.springBoot.SpringBootMSC.Model.Doctor;
-import com.labs.maven.springBoot.SpringBootMSC.Service.DoctorService;
+import com.labs.maven.springBoot.SpringBootMSC.Model.Patient;
+import com.labs.maven.springBoot.SpringBootMSC.Service.PatientService;
 import javafx.application.Application;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
@@ -18,61 +18,61 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/doctor")
+@RequestMapping("/patient")
 @RefreshScope
-public class DoctorController {
+public class PatientController {
 
     private static final Logger LOG = LoggerFactory.getLogger(Application.class);
 
-    /*@Value("${message_doctor:Doctor}")
+    /*@Value("${message_patient:Patient}")
     private String message;
 
-    @RequestMapping("doctor/message")
-    public String getDoctorMessage() {
-        LOG.info("This is an info message(messageDoctor)");
+    @RequestMapping("/message")
+    public String getPatientMessage() {
+        LOG.info("This is an info message(messagePatient)");
         return message;
     }*/
 
 
 
-    private DoctorService service;
+    private PatientService service;
 
     @Autowired
-    public void setDoctorService(DoctorService service) {
+    public void setPatientService(PatientService service) {
         this.service = service;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public Optional<Doctor> getDoctor(@PathVariable Integer id){
-        LOG.info("This is an info message(getOneDoctor)");
+    public Optional<Patient> getPatient(@PathVariable Integer id){
+        LOG.info("This is an info message(getOnePatient)");
         return service.getById(id);
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Doctor> getAllDoctors(){
-        LOG.info("This is an info message(getAllDoctors)");
+    public List<Patient> getAllPatients(){
+        LOG.info("This is an info message(getAllPatients)");
         return service.getAll();
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Object> create(@RequestBody Doctor doc){
+    public ResponseEntity<Object> create(@RequestBody Patient pat){
 
-        LOG.info("This is an info message(createDoctor)");
-        if (doc.getFirstName() == null || doc.getLastName() == null || doc.getAge() == null || doc.getSalary() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(service.saveObject(doc));
+        LOG.info("This is an info message(createPatient)");
+        if (pat.getFirstName() == null || pat.getLastName() == null || pat.getAge() == null || pat.getDiagnosis() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(service.saveObject(pat));
         } else{
-            return ResponseEntity.status(HttpStatus.OK).body(service.saveObject(doc));
+            return ResponseEntity.status(HttpStatus.OK).body(service.saveObject(pat));
         }
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public ResponseEntity<Object> update(@RequestBody Doctor newDoc, @PathVariable Integer id){
+    public ResponseEntity<Object> update(@RequestBody Patient newPat, @PathVariable Integer id){
 
         LOG.info("This is an info message(updateDoctor)");
-        if (newDoc.getFirstName() == null || newDoc.getLastName() == null || newDoc.getAge() == null || newDoc.getSalary() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(service.updateObject(newDoc, id));
+        if (newPat.getFirstName() == null || newPat.getLastName() == null || newPat.getAge() == null || newPat.getDiagnosis() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(service.updateObject(newPat, id));
         } else{
-            return ResponseEntity.status(HttpStatus.OK).body(service.updateObject(newDoc, id));
+            return ResponseEntity.status(HttpStatus.OK).body(service.updateObject(newPat, id));
         }
     }
 
@@ -80,7 +80,7 @@ public class DoctorController {
     public Map<String, Boolean> delete(@PathVariable Integer id) throws ResourceNotFoundException {
         service.getById(id).orElseThrow(() -> new ResourceNotFoundException(""));
         service.deleteObject(id);
-        LOG.info("This is an info message(deleteDoctor)");
+        LOG.info("This is an info message(deletePatient)");
         Map<String, Boolean> response = new HashMap<>();
         response.put("Delete", Boolean.TRUE);
         return response;
