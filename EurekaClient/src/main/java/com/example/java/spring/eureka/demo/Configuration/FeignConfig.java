@@ -1,4 +1,4 @@
-package com.example.java.spring.eureka.demo;
+package com.example.java.spring.eureka.demo.Configuration;
 
 import feign.Logger;
 import org.springframework.context.annotation.Bean;

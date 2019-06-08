@@ -2,6 +2,7 @@ package com.example.java.spring.eureka.demo.Client;
 
 import com.example.java.spring.eureka.demo.Model.Department;
 import com.example.java.spring.eureka.demo.Model.Doctor;
+import com.example.java.spring.eureka.demo.Model.Patient;
 import feign.Headers;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -56,4 +57,27 @@ public interface RestClient {
     @GetMapping(value = "/department/delete/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Headers("Content-Type: application/json")
     Map<String, Boolean> deleteDepartment(@PathVariable Integer id);
+
+
+
+
+    @GetMapping(value = "/patient/", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Headers("Content-Type: application/json")
+    List<Patient> getAllPatients();
+
+    @PostMapping(value = "/patient/", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Headers("Content-Type: application/json")
+    ResponseEntity<Object> createPatient(@RequestBody Patient patient);
+
+    @GetMapping(value = "/patient/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Headers("Content-Type: application/json")
+    Patient getOnePatient(@PathVariable Integer id);
+
+    @PostMapping(value = "/patient/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Headers("Content-Type: application/json")
+    ResponseEntity<Object> updatePatient(@PathVariable Integer id, @RequestBody Patient newPatient);
+
+    @GetMapping(value = "/patient/delete/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Headers("Content-Type: application/json")
+    Map<String, Boolean> deletePatient(@PathVariable Integer id);
 }
