@@ -135,7 +135,7 @@ public class DepartmentService implements ServiceInterface<Department> {
     }
 
     @Override
-    public void deleteObject(Integer id) {
+    public boolean deleteObject(Integer id) {
         if (!repository.findById(id).isPresent()) {
             ExceptionMessage em = new ExceptionMessage();
             em.setGap(null);
@@ -156,6 +156,7 @@ public class DepartmentService implements ServiceInterface<Department> {
                 }
             });
         }
+        return true;
     }
 
 

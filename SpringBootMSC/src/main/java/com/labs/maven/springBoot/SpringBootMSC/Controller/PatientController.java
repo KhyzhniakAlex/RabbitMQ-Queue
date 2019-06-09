@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,17 +25,6 @@ public class PatientController {
 
     private static final Logger LOG = LoggerFactory.getLogger(Application.class);
 
-    /*@Value("${message_patient:Patient}")
-    private String message;
-
-    @RequestMapping("/message")
-    public String getPatientMessage() {
-        LOG.info("This is an info message(messagePatient)");
-        return message;
-    }*/
-
-
-
     private PatientService service;
 
     @Autowired
@@ -43,18 +33,28 @@ public class PatientController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public Optional<Patient> getPatient(@PathVariable Integer id){
-        LOG.info("This is an info message(getOnePatient)");
-        return service.getById(id);
+    public @ResponseBody ResponseEntity<?> getPatient(@PathVariable Integer id){
+
+        if (!service.getById(id).isPresent())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(service.deleteObject(id));
+        else {
+            LOG.info("This is an info message(getOnePatient)");
+            return ResponseEntity.status(HttpStatus.OK).body(service.deleteObject(id));
+        }
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Patient> getAllPatients(){
-        LOG.info("This is an info message(getAllPatients)");
-        return service.getAll();
+    public @ResponseBody ResponseEntity<?> getAllPatients(){
+
+        try {
+            LOG.info("This is an info message(getAllPatients)");
+            return new ResponseEntity(service.getAll(), HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Object> create(@RequestBody Patient pat){
 
         LOG.info("This is an info message(createPatient)");
@@ -65,10 +65,10 @@ public class PatientController {
         }
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Object> update(@RequestBody Patient newPat, @PathVariable Integer id){
 
-        LOG.info("This is an info message(updateDoctor)");
+        LOG.info("This is an info message(updatePatient)");
         if (newPat.getFirstName() == null || newPat.getLastName() == null || newPat.getAge() == null || newPat.getDiagnosis() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(service.updateObject(newPat, id));
         } else{
@@ -77,12 +77,13 @@ public class PatientController {
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
-    public Map<String, Boolean> delete(@PathVariable Integer id) throws ResourceNotFoundException {
-        service.getById(id).orElseThrow(() -> new ResourceNotFoundException(""));
-        service.deleteObject(id);
-        LOG.info("This is an info message(deletePatient)");
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("Delete", Boolean.TRUE);
-        return response;
+    public ResponseEntity<Object> delete(@PathVariable Integer id) {
+
+        if (!service.getById(id).isPresent())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(service.deleteObject(id));
+        else {
+            LOG.info("This is an info message(deletePatient)");
+            return ResponseEntity.status(HttpStatus.OK).body(service.deleteObject(id));
+        }
     }
 }
