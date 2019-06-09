@@ -2,11 +2,10 @@ package com.labs.maven.springBoot.SpringBootMSC.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.labs.maven.springBoot.SpringBootMSC.Messaging.Producer;
-import com.labs.maven.springBoot.SpringBootMSC.Model.Doctor;
+import com.labs.maven.springBoot.SpringBootMSC.Model.Patient;
 import com.labs.maven.springBoot.SpringBootMSC.Model.ExceptionMessage;
 import com.labs.maven.springBoot.SpringBootMSC.Model.LoggingTable;
-import com.labs.maven.springBoot.SpringBootMSC.Model.Patient;
-import com.labs.maven.springBoot.SpringBootMSC.Repositories.DoctorRepository;
+import com.labs.maven.springBoot.SpringBootMSC.Repositories.PatientRepository;
 import com.labs.maven.springBoot.SpringBootMSC.ServerExceptions.InvalidInfoException;
 import com.labs.maven.springBoot.SpringBootMSC.ServerExceptions.ThereIsNoSuchItemException;
 import com.labs.maven.springBoot.SpringBootMSC.ServiceInterfaces.ServiceInterface;
@@ -15,15 +14,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
-public class DoctorService implements ServiceInterface<Doctor> {
+public class PatientService implements ServiceInterface<Patient> {
 
-    private DoctorRepository repository;
+    private PatientRepository repository;
 
     @Autowired
-    public void setDoctorRepository(DoctorRepository repository) {
+    public void setPatientRepository(PatientRepository repository) {
         this.repository = repository;
     }
 
@@ -42,110 +43,103 @@ public class DoctorService implements ServiceInterface<Doctor> {
 
 
     @Override
-    public Optional<Doctor> getById(Integer id) {
-        Optional<Doctor> doc = repository.findById(id);
-        if (!doc.isPresent()) {
+    public Optional<Patient> getById(Integer id) {
+        Optional<Patient> pat = repository.findById(id);
+        if (!pat.isPresent()) {
             ExceptionMessage em = new ExceptionMessage();
             em.setGap(null);
             throw new ThereIsNoSuchItemException();
         } else {
-            doc.map(doctor -> {
-                if (!doctor.getPresenceFlag()) {
+            pat.map(patient -> {
+                if (!patient.getPresenceFlag()) {
                     ExceptionMessage em = new ExceptionMessage();
                     em.setGap(null);
                     throw new ThereIsNoSuchItemException();
                 }
-                return doctor;
+                return patient;
             });
         }
-        sendLog(doc.get(), queueGetName);
-        return doc;
+        sendLog(pat.get(), queueGetName);
+        return pat;
     }
 
     @Override
-    public List<Doctor> getAll() {
-        List<Doctor> doctors = (List<Doctor>)repository.findAll();
-        List<Doctor> newDoctors = new ArrayList<>();
-        for (Doctor doc : doctors) {
-            repository.findById(doc.getId()).map(doctor -> {
-                if (doctor.getPresenceFlag()) {
-                    Set<Patient> patients = new HashSet<>();
-                    for (Patient pat : doctor.getPatients()) {
-                        if (pat.getPresenceFlag())
-                            patients.add(pat);
-                    }
-                    doctor.setPatients(patients);
-                    newDoctors.add(doctor);
-                }
-                return doctor;
+    public List<Patient> getAll() {
+        List<Patient> patients = (List<Patient>)repository.findAll();
+        List<Patient> newPatients = new ArrayList<>();
+        for (Patient pat : patients) {
+            repository.findById(pat.getId()).map(patient -> {
+                if (patient.getPresenceFlag())
+                    newPatients.add(patient);
+                return patient;
             });
         }
-        return newDoctors;
+        return newPatients;
     }
 
     @Override
-    public Doctor saveObject(Doctor doc) {
+    public Patient saveObject(Patient pat) {
 
         ExceptionMessage em = new ExceptionMessage();
 
-        if (doc.getFirstName() == null) {
-            em.setGap("Incorrect FNAME");
+        if (pat.getFirstName() == null) {
+            em.setGap("Incorrect First name");
             throw new InvalidInfoException();
         }
-        else if (doc.getLastName() == null){
-            em.setGap("Incorrect SURNAME");
+        else if (pat.getLastName() == null){
+            em.setGap("Incorrect Last name");
             throw new InvalidInfoException();
         }
-        else if (doc.getAge() == null) {
+        else if (pat.getAge() == null) {
             em.setGap("Incorrect AGE");
             throw new InvalidInfoException();
         }
-        else if (doc.getSalary() == null) {
-            em.setGap("Incorrect SALARY");
+        else if (pat.getDiagnosis() == null) {
+            em.setGap("Incorrect Diagnosis");
             throw new InvalidInfoException();
         } else{
-            sendLog(doc, queueCreatedName);
-            return repository.save(doc);
+            sendLog(pat, queueCreatedName);
+            return repository.save(pat);
         }
     }
 
     @Override
-    public Doctor updateObject(Doctor newDoc, Integer id) {
+    public Patient updateObject(Patient newPat, Integer id) {
 
         ExceptionMessage em = new ExceptionMessage();
 
-        if (newDoc.getFirstName() == null) {
-            em.setGap("Incorrect FNAME");
+        if (newPat.getFirstName() == null) {
+            em.setGap("Incorrect First name");
             throw new InvalidInfoException();
         }
-        else if (newDoc.getLastName() == null){
-            em.setGap("Incorrect SURNAME");
+        else if (newPat.getLastName() == null){
+            em.setGap("Incorrect Last name");
             throw new InvalidInfoException();
         }
-        else if (newDoc.getAge() == null) {
+        else if (newPat.getAge() == null) {
             em.setGap("Incorrect AGE");
             throw new InvalidInfoException();
         }
-        else if (newDoc.getSalary() == null) {
-            em.setGap("Incorrect SALARY");
+        else if (newPat.getDiagnosis() == null) {
+            em.setGap("Incorrect Diagnosis");
             throw new InvalidInfoException();
         } else {
             return repository.findById(id)
-                    .map(doc -> {
-                        if (doc.getPresenceFlag()) {
-                            doc.setFirstName(newDoc.getFirstName());
-                            doc.setLastName(newDoc.getLastName());
-                            doc.setAge(newDoc.getAge());
-                            doc.setSalary(newDoc.getSalary());
-                            return repository.save(doc);
+                    .map(pat -> {
+                        if (pat.getPresenceFlag()) {
+                            pat.setFirstName(newPat.getFirstName());
+                            pat.setLastName(newPat.getLastName());
+                            pat.setAge(newPat.getAge());
+                            pat.setDiagnosis(newPat.getDiagnosis());
+                            return repository.save(pat);
                         } else {
-                            newDoc.setId(id);
-                            return repository.save(newDoc);
+                            newPat.setId(id);
+                            return repository.save(newPat);
                         }
                     })
                     .orElseGet(() -> {
-                        newDoc.setId(id);
-                        return repository.save(newDoc);
+                        newPat.setId(id);
+                        return repository.save(newPat);
                     });
         }
     }
@@ -157,18 +151,15 @@ public class DoctorService implements ServiceInterface<Doctor> {
             em.setGap(null);
             throw new ThereIsNoSuchItemException();
         } else {
-            repository.findById(id).map(doc -> {
-                if (!doc.getPresenceFlag()) {
+            repository.findById(id).map(pat -> {
+                if (!pat.getPresenceFlag()) {
                     ExceptionMessage em = new ExceptionMessage();
                     em.setGap(null);
                     throw new ThereIsNoSuchItemException();
                 } else {
-                    doc.setPresenceFlag(false);
-                    for(Patient pat : doc.getPatients()) {
-                        pat.setDoctor(null);
-                    }
-                    sendLog(doc, queueDeletedName);
-                    return repository.save(doc);
+                    pat.setPresenceFlag(false);
+                    sendLog(pat, queueDeletedName);
+                    return repository.save(pat);
                 }
             });
         }
@@ -178,7 +169,7 @@ public class DoctorService implements ServiceInterface<Doctor> {
 
 
 
-    private void sendLog(Doctor doctor, String queueName) {
+    private void sendLog(Patient patient, String queueName) {
         System.out.println("*******************");
         System.out.println("Sending message");
         LoggingTable logRecord = new LoggingTable();
@@ -186,8 +177,8 @@ public class DoctorService implements ServiceInterface<Doctor> {
 
 
         try {
-            logRecord.setMessageText(mapper.writeValueAsString(doctor));
-            logRecord.setEntityName(Doctor.class.getName());
+            logRecord.setMessageText(mapper.writeValueAsString(patient));
+            logRecord.setEntityName(Patient.class.getName());
         } catch (IOException e) {
             e.printStackTrace();
         }

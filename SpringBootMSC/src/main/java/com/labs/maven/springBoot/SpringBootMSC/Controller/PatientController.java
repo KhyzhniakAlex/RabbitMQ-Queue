@@ -1,7 +1,7 @@
 package com.labs.maven.springBoot.SpringBootMSC.Controller;
 
-import com.labs.maven.springBoot.SpringBootMSC.Model.Doctor;
-import com.labs.maven.springBoot.SpringBootMSC.Service.DoctorService;
+import com.labs.maven.springBoot.SpringBootMSC.Model.Patient;
+import com.labs.maven.springBoot.SpringBootMSC.Service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,18 +11,18 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/service/doctor")
-public class DoctorController {
+@RequestMapping("/service/patient")
+public class PatientController {
 
-    private DoctorService service;
+    private PatientService service;
 
     @Autowired
-    public void setDoctorService(DoctorService service) {
+    public void setPatientService(PatientService service) {
         this.service = service;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public @ResponseBody ResponseEntity<Optional<Doctor>> getDoctor(@PathVariable Integer id){
+    public @ResponseBody ResponseEntity<Optional<Patient>> getPatient(@PathVariable Integer id){
 
         if (!service.getById(id).isPresent())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(service.getById(id));
@@ -32,7 +32,7 @@ public class DoctorController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public @ResponseBody ResponseEntity<List<Doctor>> getAllDoctors(){
+    public @ResponseBody ResponseEntity<List<Patient>> getAllPatients(){
 
         try {
             return ResponseEntity.status(HttpStatus.OK).body(service.getAll());
@@ -42,22 +42,22 @@ public class DoctorController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Doctor> create(@RequestBody Doctor doc){
+    public ResponseEntity<Patient> create(@RequestBody Patient pat){
 
-        if (doc.getFirstName() == null || doc.getLastName() == null || doc.getAge() == null || doc.getSalary() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(service.saveObject(doc));
+        if (pat.getFirstName() == null || pat.getLastName() == null || pat.getAge() == null || pat.getDiagnosis() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(service.saveObject(pat));
         } else{
-            return ResponseEntity.status(HttpStatus.OK).body(service.saveObject(doc));
+            return ResponseEntity.status(HttpStatus.OK).body(service.saveObject(pat));
         }
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public ResponseEntity<Doctor> update(@RequestBody Doctor newDoc, @PathVariable Integer id){
+    public ResponseEntity<Patient> update(@RequestBody Patient newPat, @PathVariable Integer id){
 
-        if (newDoc.getFirstName() == null || newDoc.getLastName() == null || newDoc.getAge() == null || newDoc.getSalary() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(service.updateObject(newDoc, id));
+        if (newPat.getFirstName() == null || newPat.getLastName() == null || newPat.getAge() == null || newPat.getDiagnosis() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(service.updateObject(newPat, id));
         } else{
-            return ResponseEntity.status(HttpStatus.OK).body(service.updateObject(newDoc, id));
+            return ResponseEntity.status(HttpStatus.OK).body(service.updateObject(newPat, id));
         }
     }
 

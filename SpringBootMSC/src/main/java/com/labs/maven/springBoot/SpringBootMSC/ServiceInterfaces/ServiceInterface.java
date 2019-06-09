@@ -12,5 +12,5 @@ public interface ServiceInterface<T> {
     List<T> getAll();
     T saveObject(T object);
     T updateObject(T newObject, Integer id);
-    void deleteObject(Integer id);
+    boolean deleteObject(Integer id);
 }

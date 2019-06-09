@@ -1,15 +1,17 @@
 package com.labs.maven.springBoot.SpringBootMSC.Service;
 
-import com.labs.maven.springBoot.SpringBootMSC.Model.Department;
-import com.labs.maven.springBoot.SpringBootMSC.Model.Doctor;
-import com.labs.maven.springBoot.SpringBootMSC.Model.ExceptionMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.labs.maven.springBoot.SpringBootMSC.Messaging.Producer;
+import com.labs.maven.springBoot.SpringBootMSC.Model.*;
 import com.labs.maven.springBoot.SpringBootMSC.Repositories.DepartmentRepository;
 import com.labs.maven.springBoot.SpringBootMSC.ServerExceptions.InvalidInfoException;
 import com.labs.maven.springBoot.SpringBootMSC.ServerExceptions.ThereIsNoSuchItemException;
 import com.labs.maven.springBoot.SpringBootMSC.ServiceInterfaces.ServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -21,6 +23,20 @@ public class DepartmentService implements ServiceInterface<Department> {
     public void setDepartmentRepository(DepartmentRepository repository) {
         this.repository = repository;
     }
+
+
+    @Autowired
+    Producer publisher;
+
+    @Value("${jsa.rabbitmq.queue.createdtype}")
+    String queueCreatedName;
+
+    @Value("${jsa.rabbitmq.queue.gettype}")
+    String queueGetName;
+
+    @Value("${jsa.rabbitmq.queue.deletedtype}")
+    String queueDeletedName;
+
 
     @Override
     public Optional<Department> getById(Integer id) {
@@ -40,6 +56,7 @@ public class DepartmentService implements ServiceInterface<Department> {
                 return dep;
             });
         }
+        sendLog(department.get(), queueGetName);
         return department;
     }
 
@@ -79,6 +96,7 @@ public class DepartmentService implements ServiceInterface<Department> {
             throw new InvalidInfoException();
         }
         else{
+            sendLog(department, queueCreatedName);
             return repository.save(department);
         }
     }
@@ -117,7 +135,7 @@ public class DepartmentService implements ServiceInterface<Department> {
     }
 
     @Override
-    public void deleteObject(Integer id) {
+    public boolean deleteObject(Integer id) {
         if (!repository.findById(id).isPresent()) {
             ExceptionMessage em = new ExceptionMessage();
             em.setGap(null);
@@ -133,9 +151,38 @@ public class DepartmentService implements ServiceInterface<Department> {
                     for(Doctor doc : department.getDoctors()) {
                         doc.setDepartment(null);
                     }
+                    sendLog(department, queueDeletedName);
                     return repository.save(department);
                 }
             });
         }
+        return true;
+    }
+
+
+
+
+    private void sendLog(Department department, String queueName) {
+        System.out.println("*******************");
+        System.out.println("Sending message");
+        LoggingTable logRecord = new LoggingTable();
+        ObjectMapper mapper = new ObjectMapper();
+
+
+        try {
+            logRecord.setMessageText(mapper.writeValueAsString(department));
+            logRecord.setEntityName(Patient.class.getName());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String loggerRecordString = null;
+        try {
+            loggerRecordString = mapper.writeValueAsString(logRecord);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(loggerRecordString);
+        publisher.produceMsg(loggerRecordString, queueName);
     }
 }
