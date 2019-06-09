@@ -32,30 +32,30 @@ public class PatientController {
         this.service = service;
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public @ResponseBody ResponseEntity<?> getPatient(@PathVariable Integer id){
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public @ResponseBody ResponseEntity<Optional<Patient>> getPatient(@PathVariable Integer id){
 
         if (!service.getById(id).isPresent())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(service.deleteObject(id));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(service.getById(id));
         else {
             LOG.info("This is an info message(getOnePatient)");
-            return ResponseEntity.status(HttpStatus.OK).body(service.deleteObject(id));
+            return ResponseEntity.status(HttpStatus.OK).body(service.getById(id));
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public @ResponseBody ResponseEntity<?> getAllPatients(){
+    @RequestMapping(method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public @ResponseBody ResponseEntity<List<Patient>> getAllPatients(){
 
         try {
             LOG.info("This is an info message(getAllPatients)");
-            return new ResponseEntity(service.getAll(), HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body(service.getAll());
         } catch (Exception e){
-            return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(service.getAll());
         }
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Object> create(@RequestBody Patient pat){
+    public ResponseEntity<Patient> create(@RequestBody Patient pat){
 
         LOG.info("This is an info message(createPatient)");
         if (pat.getFirstName() == null || pat.getLastName() == null || pat.getAge() == null || pat.getDiagnosis() == null) {
@@ -66,7 +66,7 @@ public class PatientController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Object> update(@RequestBody Patient newPat, @PathVariable Integer id){
+    public ResponseEntity<Patient> update(@RequestBody Patient newPat, @PathVariable Integer id){
 
         LOG.info("This is an info message(updatePatient)");
         if (newPat.getFirstName() == null || newPat.getLastName() == null || newPat.getAge() == null || newPat.getDiagnosis() == null) {
@@ -77,13 +77,14 @@ public class PatientController {
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Object> delete(@PathVariable Integer id) {
+    public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
 
         if (!service.getById(id).isPresent())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(service.deleteObject(id));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
         else {
             LOG.info("This is an info message(deletePatient)");
-            return ResponseEntity.status(HttpStatus.OK).body(service.deleteObject(id));
+            service.deleteObject(id);
+            return ResponseEntity.status(HttpStatus.OK).body(true);
         }
     }
 }

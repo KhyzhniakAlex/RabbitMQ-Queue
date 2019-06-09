@@ -32,29 +32,29 @@ public class DepartmentController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public @ResponseBody ResponseEntity<?> getDepartment(@PathVariable Integer id){
+    public @ResponseBody ResponseEntity<Optional<Department>> getDepartment(@PathVariable Integer id){
 
         if (!service.getById(id).isPresent())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(service.deleteObject(id));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(service.getById(id));
         else {
             LOG.info("This is an info message(getOneDepartment)");
-            return ResponseEntity.status(HttpStatus.OK).body(service.deleteObject(id));
+            return ResponseEntity.status(HttpStatus.OK).body(service.getById(id));
         }
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public @ResponseBody ResponseEntity<?> getAllDepartments(){
+    public @ResponseBody ResponseEntity<List<Department>> getAllDepartments(){
 
         try {
             LOG.info("This is an info message(getAllDepartments)");
-            return new ResponseEntity(service.getAll(), HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body(service.getAll());
         } catch (Exception e){
-            return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(service.getAll());
         }
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Object> create(@RequestBody Department dep){
+    public ResponseEntity<Department> create(@RequestBody Department dep){
 
         LOG.info("This is an info message(createDepartment)");
         if (dep.getName() == null || dep.getFloor() == null) {
@@ -65,7 +65,7 @@ public class DepartmentController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Object> update(@RequestBody Department newDep, @PathVariable Integer id){
+    public ResponseEntity<Department> update(@RequestBody Department newDep, @PathVariable Integer id){
 
         LOG.info("This is an info message(updateDepartment)");
         if (newDep.getName() == null || newDep.getFloor() == null) {
@@ -76,13 +76,14 @@ public class DepartmentController {
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Object> delete(@PathVariable Integer id) {
+    public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
 
         if (!service.getById(id).isPresent())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(service.deleteObject(id));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
         else {
             LOG.info("This is an info message(deleteDepartment)");
-            return ResponseEntity.status(HttpStatus.OK).body(service.deleteObject(id));
+            service.deleteObject(id);
+            return ResponseEntity.status(HttpStatus.OK).body(true);
         }
     }
 }

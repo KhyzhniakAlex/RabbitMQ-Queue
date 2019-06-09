@@ -33,29 +33,29 @@ public class DoctorController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public @ResponseBody ResponseEntity<?> getDoctor(@PathVariable Integer id){
+    public @ResponseBody ResponseEntity<Optional<Doctor>> getDoctor(@PathVariable Integer id){
 
         if (!service.getById(id).isPresent())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(service.deleteObject(id));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(service.getById(id));
         else {
             LOG.info("This is an info message(getOneDoctor)");
-            return ResponseEntity.status(HttpStatus.OK).body(service.deleteObject(id));
+            return ResponseEntity.status(HttpStatus.OK).body(service.getById(id));
         }
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public @ResponseBody ResponseEntity<?> getAllDoctors(){
+    public @ResponseBody ResponseEntity<List<Doctor>> getAllDoctors(){
 
         try {
             LOG.info("This is an info message(getAllDoctors)");
-            return new ResponseEntity(service.getAll(), HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body(service.getAll());
         } catch (Exception e){
-            return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(service.getAll());
         }
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Object> create(@RequestBody Doctor doc){
+    public ResponseEntity<Doctor> create(@RequestBody Doctor doc){
 
         LOG.info("This is an info message(createDoctor)");
         if (doc.getFirstName() == null || doc.getLastName() == null || doc.getAge() == null || doc.getSalary() == null) {
@@ -66,7 +66,7 @@ public class DoctorController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Object> update(@RequestBody Doctor newDoc, @PathVariable Integer id){
+    public ResponseEntity<Doctor> update(@RequestBody Doctor newDoc, @PathVariable Integer id){
 
         LOG.info("This is an info message(updateDoctor)");
         if (newDoc.getFirstName() == null || newDoc.getLastName() == null || newDoc.getAge() == null || newDoc.getSalary() == null) {
@@ -77,13 +77,14 @@ public class DoctorController {
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Object> delete(@PathVariable Integer id) {
+    public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
 
         if (!service.getById(id).isPresent())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(service.deleteObject(id));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
         else {
             LOG.info("This is an info message(deleteDoctor)");
-            return ResponseEntity.status(HttpStatus.OK).body(service.deleteObject(id));
+            service.deleteObject(id);
+            return ResponseEntity.status(HttpStatus.OK).body(true);
         }
     }
 }

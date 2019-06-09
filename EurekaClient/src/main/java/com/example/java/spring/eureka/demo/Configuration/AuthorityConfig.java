@@ -32,7 +32,7 @@ public class AuthorityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/","/login","/registration")
+                .antMatchers("/login","/registration")
                 .permitAll()
                 .antMatchers("/logs")
                 .hasAnyRole("ADMIN")
@@ -40,7 +40,7 @@ public class AuthorityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage("/login")
-                .defaultSuccessUrl("/brands")
+                .defaultSuccessUrl("/")
                 .permitAll()
                 .and()
                 .logout().permitAll();
