@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
+@RequestMapping("/department")
 public class DepartmentController {
 
     private RestClient client;

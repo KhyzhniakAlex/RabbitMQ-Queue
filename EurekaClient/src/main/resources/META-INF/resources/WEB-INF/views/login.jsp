@@ -15,7 +15,7 @@
 <body>
 
 <div class="container-fluid">
-    <!--<div class="row">
+    <div class="row">
         <form method="POST" action="${contextPath}/login"  style="max-width: 600px;padding-left: 0;margin-top: 30px;" class="col-7 offset-4">
             <h2 class="form-heading">Log in</h2>
 
@@ -33,8 +33,8 @@
             </div>
 
         </form>
-    </div>-->
-    <div class="welcomePage">
+    </div>
+    <!--<div class="welcomePage">
         <div class="welcomeImage"></div>
         <div class="choosingTab">
             <div class="choosingButton">
@@ -47,7 +47,7 @@
 
             </div>
         </div>
-    </div>
+    </div>-->
 </div>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>

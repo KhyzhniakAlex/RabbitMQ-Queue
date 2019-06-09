@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
+@RequestMapping("/patient")
 public class PatientController {
 
     private RestClient client;

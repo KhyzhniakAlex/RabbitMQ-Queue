@@ -32,8 +32,8 @@ public class AuthController {
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String menu(Model model) {
-        return "main";
+    public String index() {
+        return "index";
     }
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
