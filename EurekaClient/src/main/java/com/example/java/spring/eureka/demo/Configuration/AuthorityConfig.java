@@ -34,7 +34,7 @@ public class AuthorityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/","/login","/registration")
                 .permitAll()
-                .antMatchers("/logs")
+                .antMatchers()
                 .hasAnyRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()

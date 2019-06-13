@@ -1,17 +1,22 @@
 package com.example.java.spring.eureka.demo.Controller;
 
 import com.example.java.spring.eureka.demo.Client.RestClient;
+import com.example.java.spring.eureka.demo.Model.Department;
 import com.example.java.spring.eureka.demo.Model.Doctor;
 import com.example.java.spring.eureka.demo.Model.Patient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/doctor")
@@ -24,24 +29,30 @@ public class DoctorController {
         this.client = client;
     }
 
+    //private List<Doctor> doctors = new ArrayList<>();
+
     @RequestMapping(method = RequestMethod.GET)
-    public String getAllDoctors(Model model, String error, String logout) {
+    public ModelAndView getAllDoctors() {
 
-        if (SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+        ModelAndView model = new ModelAndView("doctorList");
 
-            List<Doctor> doctors = client.getAllDoctors().getBody();
-            if (doctors != null)
-                model.addAttribute("doctors", doctors);
-            return "doctorList";
-            /*String doctorsStr = client.getAllDoctors().getBody().toString();
-            Doctor[] doctors;
-            if (doctorsStr != null) {
-                doctors = DeserializeDoctorList(doctorsStr);
-                model.addAttribute("doctors", doctors);
-            }
-            return "doctorList";*/
-        }
-        return "";
+        List<Doctor> doctors = client.getAllDoctors();
+        model.addObject("doctors", doctors);
+        return model;
+
+//            Doctor doc1 = new Doctor(1, "Oleksandr", "Khyzhniak", 20, 25000);
+////            Patient pat1 = new Patient(1, "qazwsx", "xswzaq", 45, "qwertytyui");
+////            Patient pat2 = new Patient(2, "tgbyhn", "mjunhy", 45, "zxcvbnmm");
+////            Set<Patient> set = new HashSet<>();
+////            set.add(pat1);
+////            set.add(pat2);
+////            doc1.setPatients(set);
+////            doc1.setDepartment(new Department(1, "abs", 2));
+//            doctors.add(doc1);
+//            doctors.add(new Doctor(3, "Oleksii", "Timchenko", 21, 15000));
+//            model.addObject("doctors", doctors);
+//
+//            return model;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -49,79 +60,39 @@ public class DoctorController {
 
         ModelAndView model = new ModelAndView("doctorDetail");
 
-        Doctor doctor = client.getOneDoctor(id).getBody().get();
+        Doctor doctor = client.getOneDoctor(id).get();
         model.addObject("doctor", doctor);
-        if (doctor.getDepartment() != null)
-            model.addObject("department",doctor.getDepartment());
-        if (doctor.getPatients() != null)
-            model.addObject("patients",doctor.getPatients());
+        //model.addObject("department",doctor.getDepartment());
+        //model.addObject("patients",doctor.getPatients());
         return model;
-        /*String docStr = client.getOneDoctor(id).getBody().get().toString();
-        Doctor doc;
-        if (docStr != null)
-        {
-            doc = Deserialize(docStr);
-            model.addObject("doctor", doc);
-            if (doc.getPatients() != null)
-                model.addObject("patients", doc.getPatients());
-            if (doc.getDepartment() != null)
-                model.addObject("department", doc.getDepartment());
-        }*/
+
+        /*for(Doctor doc : doctors) {
+            if (id == doc.getId()) {
+                model.addObject("doctor", doc);
+                //model.addObject("department",doc.getDepartment());
+                //model.addObject("patients",doc.getPatients());
+            }
+        }
+        return model;*/
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public ModelAndView createDoctor(@ModelAttribute Doctor doctor) {
         client.createDoctor(doctor);
-        return new ModelAndView("redirect:/doctors");
+        return new ModelAndView("redirect:/doctor");
     }
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.POST)
     public ModelAndView updateDoctor(@PathVariable Integer id, @ModelAttribute Doctor newDoctor) {
-        client.updateDoctor(id, newDoctor);
-        return new ModelAndView("redirect:/doctors");
+        client.updateDoctor(newDoctor, id);
+        return new ModelAndView("redirect:/doctor");
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     public ModelAndView deleteDoctor(@PathVariable Integer id) {
 
         if (client.deleteDoctor(id).getBody())
-            return new ModelAndView("redirect:/doctors");
-        return new ModelAndView("redirect:/doctors");
+            return new ModelAndView("redirect:/doctor");
+        return new ModelAndView("redirect:/doctor");
     }
-
-
-
-
-    /*private Doctor[] DeserializeDoctorList(String doctorString)
-    {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.readValue(doctorString, Doctor[].class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return  null;
-    }
-
-    private Patient[] DeserializePatientList(String patientString)
-    {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.readValue(patientString, Patient[].class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return  null;
-    }
-
-    private Doctor Deserialize(String objectString)
-    {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.readValue(objectString, Doctor.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return  null;
-    }*/
 }

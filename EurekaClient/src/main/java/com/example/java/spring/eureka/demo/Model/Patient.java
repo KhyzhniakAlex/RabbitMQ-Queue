@@ -25,7 +25,8 @@ public class Patient {
     @Column(name="presenceFlag", nullable = false)
     private boolean presenceFlag = true;
 
-    public Patient(String firstName, String lastName, Integer age, String diagnosis) {
+    public Patient(int id, String firstName, String lastName, Integer age, String diagnosis) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;

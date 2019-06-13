@@ -2,16 +2,18 @@ package com.example.java.spring.eureka.demo.Controller;
 
 import com.example.java.spring.eureka.demo.Client.RestClient;
 import com.example.java.spring.eureka.demo.Model.Log;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.io.IOException;
+import java.util.List;
 
 @RestController
+@RequestMapping("/logs")
 public class LogController {
 
     private RestClient client;
@@ -22,27 +24,22 @@ public class LogController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public String getAllDoctors(Model model, String error, String logout) {
+    public ModelAndView getAllDoctors() {
 
-        String logsStr = client.getAllLogs().getBody().toString();
-        Log[] logs;
-        if (logsStr != null) {
-            logs = DeserializeList(logsStr);
-            model.addAttribute("logs", logs);
+        ModelAndView model = new ModelAndView("logList");
+
+        List<Log> logs = client.getAll();
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            model.addObject("error", "You don't have permissions for this page");
+            return model;
         }
-        return "logList";
-    }
-
-
-    private Log[] DeserializeList(String logsString)
-    {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            Log[] logs = mapper.readValue(logsString, Log[].class);
-            return logs;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return  null;
+        model.addObject("error", "");
+        model.addObject("logs", logs);
+        return model;
     }
 }
