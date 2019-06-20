@@ -35,11 +35,6 @@ public class AuthController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index() {
-
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        String name = auth.getName();
-//        model.addAttribute("name", name);
-
         return "index";
     }
 

@@ -27,8 +27,6 @@ public class DepartmentController {
         this.client = client;
     }
 
-    //private List<Department> departments = new ArrayList<Department>();
-
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView getAllDepartments() {
 
@@ -37,19 +35,6 @@ public class DepartmentController {
         List<Department> departments = client.getAllDepartments();
         model.addObject("departments", departments);
         return model;
-
-//        Department department = new Department(1, "abs", 2);
-//        Doctor doc1 = new Doctor(1, "Oleksandr", "Khyzhniak", 20, 25000);
-//        Doctor doc2 = new Doctor(2, "Bohdan", "Konorin", 21, 15000);
-//        Set<Doctor> set = new HashSet<>();
-//        set.add(doc1);
-//        set.add(doc2);
-//        department.setDoctors(set);
-//        departments.add(department);
-//        departments.add(new Department(2, "qwerty", 5));
-//        model.addObject("departments", departments);
-
-//        return model;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -59,16 +44,7 @@ public class DepartmentController {
 
         Department department = client.getOneDepartment(id).get();
         model.addObject("department", department);
-        //model.addObject("doctors", department.getDoctors());
         return model;
-
-        /*for(Department dep : departments) {
-            if (id == dep.getId()) {
-                model.addObject("department", dep);
-                //model.addObject("doctors", dep.getDoctors());
-            }
-        }
-        return model;*/
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
