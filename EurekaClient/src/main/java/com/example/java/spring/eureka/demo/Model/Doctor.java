@@ -26,8 +26,9 @@ public class Doctor {
     @Column(name="presenceFlag", nullable = false)
     private boolean presenceFlag = true;
 
-    public Doctor(String firstName, String lastName, Integer age, Integer salary)
+    public Doctor(int id, String firstName, String lastName, Integer age, Integer salary)
     {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;

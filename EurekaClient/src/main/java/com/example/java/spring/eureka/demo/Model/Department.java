@@ -16,8 +16,9 @@ public class Department {
     @Column(name = "floor", nullable = false)
     private Integer floor;
 
-    public Department(String name, Integer floor)
+    public Department(int id, String name, Integer floor)
     {
+        this.id = id;
         this.name = name;
         this.floor = floor;
     }
