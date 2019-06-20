@@ -26,8 +26,6 @@ public class PatientController {
         this.client = client;
     }
 
-    //private List<Patient> patients = new ArrayList<>();
-
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView getAllPatients() {
 
@@ -36,14 +34,6 @@ public class PatientController {
         List<Patient> patients = client.getAllPatients();
         model.addObject("patients", patients);
         return model;
-
-//        Patient patient = new Patient(1, "qazwsx", "xswzaq", 45, "qwertytyui");
-////        patient.setDoctor(new Doctor(1, "Oleksandr", "Khyzhniak", 20, 25000));
-//        patients.add(patient);
-//        patients.add(new Patient(3, "Oleksii", "Filatov", 100, "tanki"));
-//        model.addObject("patients", patients);
-//
-//        return model;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -53,16 +43,7 @@ public class PatientController {
 
         Patient patient = client.getOnePatient(id).get();
         model.addObject("patient", patient);
-        //model.addObject("doctor", patient.getDoctor());
         return model;
-
-        /*for(Patient pat : patients) {
-            if (id == pat.getId()) {
-                model.addObject("patient", pat);
-                model.addObject("doctor", pat.getDoctor());
-            }
-        }
-        return model;*/
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
